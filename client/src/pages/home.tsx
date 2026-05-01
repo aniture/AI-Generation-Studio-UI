@@ -5,6 +5,9 @@ import { GlassCard } from "@/components/ui/glass-card";
 import { StudioButton } from "@/components/ui/studio-button";
 import { SectionTitle } from "@/components/ui/section-title";
 import { Badge } from "@/components/ui/badge";
+import { AuroraBackground } from "@/components/ui/aurora-background";
+import { SpotlightCard } from "@/components/ui/spotlight-card";
+import { ShimmerButton } from "@/components/ui/shimmer-button";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -104,9 +107,9 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="hero-gradient relative py-24 md:py-32">
+      <AuroraBackground className="py-24 md:py-32">
         <div className="container relative z-10">
-          <motion.div 
+          <motion.div
             className="text-center space-y-8 max-w-4xl mx-auto"
             variants={heroVariants}
             initial="hidden"
@@ -116,28 +119,28 @@ export default function Home() {
               <Badge variant="beta" className="mb-4">
                 ✨ Now in Beta
               </Badge>
-              <h1 className="text-5xl md:text-7xl font-heading font-bold leading-tight">
-                Create, texture & 
+              <h1 className="text-5xl md:text-7xl font-heading font-bold leading-tight tracking-tight">
+                Create, texture &
                 <span className="gradient-text block">publish 3D with AI</span>
               </h1>
               <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-                Professional AI-powered 3D content generation platform. 
+                Professional AI-powered 3D content generation platform.
                 From concept to creation in seconds, not hours.
               </p>
             </motion.div>
-            
-            <motion.div 
+
+            <motion.div
               className="flex flex-col sm:flex-row gap-4 justify-center items-center"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.6 }}
             >
               <Link href="/generate">
-                <StudioButton size="lg" className="gap-2" data-testid="hero-launch-studio">
+                <ShimmerButton data-testid="hero-launch-studio" className="h-14 text-base">
                   <Zap className="w-5 h-5" />
                   Launch Studio
                   <ArrowRight className="w-4 h-4" />
-                </StudioButton>
+                </ShimmerButton>
               </Link>
               <Link href="/playground">
                 <StudioButton variant="outline" size="lg" className="gap-2" data-testid="hero-view-api">
@@ -168,7 +171,7 @@ export default function Home() {
             </motion.div>
           </motion.div>
         </div>
-      </section>
+      </AuroraBackground>
 
       {/* Main Features */}
       <section className="section">
@@ -179,47 +182,50 @@ export default function Home() {
             description="Professional-grade tools designed for creators, developers, and businesses"
             className="mb-16"
           />
-          
-          <motion.div 
+
+          <motion.div
             className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
             variants={containerVariants}
             initial="hidden"
             animate="visible"
             viewport={{ once: true, amount: 0.2 }}
           >
-            {mainFeatures.map((feature, index) => {
+            {mainFeatures.map((feature) => {
               const Icon = feature.icon;
               return (
                 <motion.div key={feature.title} variants={cardVariants}>
-                  <GlassCard className={`h-full group hover:scale-105 transition-all duration-300 ${feature.primary ? 'ring-1 ring-primary/20' : ''}`}>
-                    <div className="space-y-4">
+                  <SpotlightCard
+                    className={feature.primary ? "ring-1 ring-primary/20" : ""}
+                    innerClassName="p-8"
+                  >
+                    <div className="space-y-4 h-full flex flex-col">
                       <div className="flex items-center gap-3">
-                        <div className={`p-2 rounded-lg ${feature.primary ? 'bg-primary/20' : 'bg-accent/20'}`}>
-                          <Icon className={`w-5 h-5 ${feature.primary ? 'text-primary' : 'text-accent'}`} />
+                        <div className={`p-2 rounded-lg ${feature.primary ? "bg-primary/20" : "bg-accent/20"}`}>
+                          <Icon className={`w-5 h-5 ${feature.primary ? "text-primary" : "text-accent"}`} />
                         </div>
                         <h3 className="font-heading font-semibold text-lg">{feature.title}</h3>
                         {feature.primary && (
                           <Badge variant="live" className="text-xs">Popular</Badge>
                         )}
                       </div>
-                      
+
                       <p className="text-muted-foreground">{feature.description}</p>
-                      
-                      <p className="text-sm text-muted-foreground/80 leading-relaxed">
+
+                      <p className="text-sm text-muted-foreground/80 leading-relaxed flex-1">
                         {feature.details}
                       </p>
-                      
+
                       <Link href={feature.href}>
-                        <StudioButton 
-                          variant={feature.primary ? "gradient" : "outline"} 
-                          className="w-full mt-6 group-hover:scale-105 transition-transform"
+                        <StudioButton
+                          variant={feature.primary ? "gradient" : "outline"}
+                          className="w-full mt-6"
                           data-testid={feature.testId}
                         >
                           {feature.buttonText}
                         </StudioButton>
                       </Link>
                     </div>
-                  </GlassCard>
+                  </SpotlightCard>
                 </motion.div>
               );
             })}

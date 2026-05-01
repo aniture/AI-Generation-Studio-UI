@@ -1,12 +1,17 @@
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
-import { 
-  registerServiceWorker, 
-  setupPWAInstallPrompt, 
+import { installMockApi } from "./lib/mockApi";
+import {
+  registerServiceWorker,
+  setupPWAInstallPrompt,
   setupNetworkStatusHandling,
   cacheImportantAssets
 } from "./lib/serviceWorker";
+
+// Demo mode: route /api/* through an in-memory mock so the app runs as a
+// pure static SPA on Vercel with no backend.
+installMockApi();
 
 // Register service worker and set up PWA functionality
 if (import.meta.env.PROD) {
