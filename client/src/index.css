@@ -1,111 +1,101 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@300;400;500;600;700;800&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/*
+  Forge — design tokens.
+
+  The product turns prompts into 3D assets, so the interface is built to read as
+  a render instrument: graphite ground, hairline structure, monospace readouts.
+  Two accents with distinct jobs — never decorative:
+    flux (orange) = action + render/heat state
+    mesh (teal)   = geometry + completed work
+*/
+
 :root {
-  /* AI Studio Brand Colors */
-  --bg: 224 42% 8%;
-  --panel: rgba(255, 255, 255, 0.04);
-  --muted: 216 12% 63%;
-  --primary: 262 84% 58%;
-  --primary-2: 195 100% 53%;
-  --accent: 38 95% 51%;
-  --success: 142 71% 45%;
-  --danger: 0 85% 60%;
+  /* Palette */
+  --ink: #0c0d0f;
+  --panel: #131519;
+  --panel-2: #191c21;
+  --line: #262a31;
+  --line-soft: #1c1f25;
+  --bone: #e9eaec;
+  --dim: #8b929c;
+  --flux: #ff5c1a;
+  --flux-dim: #b33d0f;
+  --mesh: #4dd8c0;
+  --mesh-dim: #2b8d7c;
+  --warn: #ffc24b;
+  --fail: #ff4d5e;
 
-  /* Dark Theme (default) */
-  --background: hsl(var(--bg));
-  --foreground: hsl(220 14% 96%);
+  /* Semantic tokens consumed by tailwind.config.ts */
+  --background: var(--ink);
+  --foreground: var(--bone);
   --card: var(--panel);
-  --card-foreground: hsl(220 14% 96%);
-  --popover: hsl(219 29% 14%);
-  --popover-foreground: hsl(220 14% 96%);
-  --primary: hsl(var(--primary));
-  --primary-foreground: hsl(0 0% 100%);
-  --secondary: hsl(220 14% 13%);
-  --secondary-foreground: hsl(220 14% 96%);
-  --muted: hsl(220 14% 11%);
-  --muted-foreground: hsl(var(--muted));
-  --accent: hsl(var(--accent));
-  --accent-foreground: hsl(219 29% 14%);
-  --destructive: hsl(var(--danger));
-  --destructive-foreground: hsl(0 0% 100%);
-  --border: rgba(255, 255, 255, 0.1);
-  --input: hsl(220 14% 11%);
-  --ring: hsl(var(--primary));
-  --chart-1: hsl(var(--primary));
-  --chart-2: hsl(var(--primary-2));
-  --chart-3: hsl(var(--accent));
-  --chart-4: hsl(var(--success));
-  --chart-5: hsl(var(--danger));
+  --card-foreground: var(--bone);
+  --popover: var(--panel-2);
+  --popover-foreground: var(--bone);
+  --primary: var(--flux);
+  --primary-foreground: #14100d;
+  --primary-2: var(--mesh);
+  --primary-2-foreground: #06201b;
+  --secondary: var(--panel-2);
+  --secondary-foreground: var(--bone);
+  --muted: var(--panel-2);
+  --muted-foreground: var(--dim);
+  --accent: var(--mesh);
+  --accent-foreground: #06201b;
+  --success: var(--mesh);
+  --warning: var(--warn);
+  --destructive: var(--fail);
+  --destructive-foreground: #fff;
+  --border: var(--line);
+  --input: var(--line);
+  --ring: var(--flux);
+  --chart-1: var(--flux);
+  --chart-2: var(--mesh);
+  --chart-3: var(--warn);
+  --chart-4: var(--dim);
+  --chart-5: var(--fail);
   --sidebar: var(--panel);
-  --sidebar-foreground: hsl(220 14% 96%);
-  --sidebar-primary: hsl(var(--primary));
-  --sidebar-primary-foreground: hsl(0 0% 100%);
-  --sidebar-accent: var(--panel);
-  --sidebar-accent-foreground: hsl(220 14% 96%);
-  --sidebar-border: rgba(255, 255, 255, 0.1);
-  --sidebar-ring: hsl(var(--primary));
-  
-  /* Typography */
-  --font-sans: Inter, system-ui, -apple-system, sans-serif;
-  --font-serif: Georgia, serif;
-  --font-mono: 'SF Mono', Monaco, 'Cascadia Code', monospace;
-  --font-heading: Sora, var(--font-sans);
-  
-  /* Design Tokens */
-  --radius: 1rem;
-  --container-max-width: 80rem; /* max-w-7xl */
-  --section-spacing: 4rem; /* py-16 */
-  
-  /* Glass Effect */
-  --glass-bg: rgba(255, 255, 255, 0.05);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-hover: rgba(255, 255, 255, 0.2);
+  --sidebar-foreground: var(--bone);
+  --sidebar-primary: var(--flux);
+  --sidebar-primary-foreground: #14100d;
+  --sidebar-accent: var(--panel-2);
+  --sidebar-accent-foreground: var(--bone);
+  --sidebar-border: var(--line);
+  --sidebar-ring: var(--flux);
 
-  /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  /* Type */
+  --font-sans: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+  --font-heading: Archivo, var(--font-sans);
+  --font-mono: "IBM Plex Mono", "SF Mono", Menlo, monospace;
+  --font-serif: Georgia, serif;
+
+  /* Geometry — machined, not pillowy */
+  --radius: 0.375rem;
+  --container-max-width: 78rem;
 }
 
+/*
+  Light mode reads as a drafting sheet rather than an inverted dark theme:
+  warm paper, ink linework, same two accents.
+*/
 :root:not(.dark) {
-  /* Light Theme Override */
-  --bg: 0 0% 100%;
-  --panel: rgba(0, 0, 0, 0.04);
-  --muted: 216 13% 47%;
-  
-  --background: hsl(var(--bg));
-  --foreground: hsl(220 14% 4%);
-  --card: var(--panel);
-  --card-foreground: hsl(220 14% 4%);
-  --popover: hsl(0 0% 100%);
-  --popover-foreground: hsl(220 14% 4%);
-  --primary: hsl(var(--primary));
-  --primary-foreground: hsl(0 0% 100%);
-  --secondary: hsl(220 14% 96%);
-  --secondary-foreground: hsl(220 14% 4%);
-  --muted: hsl(220 14% 96%);
-  --muted-foreground: hsl(var(--muted));
-  --accent: hsl(var(--accent));
-  --accent-foreground: hsl(0 0% 100%);
-  --destructive: hsl(var(--danger));
-  --destructive-foreground: hsl(0 0% 100%);
-  --border: rgba(0, 0, 0, 0.1);
-  --input: hsl(220 14% 96%);
-  --ring: hsl(var(--primary));
-  --sidebar: var(--panel);
-  --sidebar-foreground: hsl(220 14% 4%);
-  --sidebar-border: rgba(0, 0, 0, 0.1);
-  
-  /* Glass Effect for Light Mode */
-  --glass-bg: rgba(0, 0, 0, 0.05);
-  --glass-border: rgba(0, 0, 0, 0.1);
-  --glass-hover: rgba(0, 0, 0, 0.2);
+  --ink: #f4f3f0;
+  --panel: #ffffff;
+  --panel-2: #eceae5;
+  --line: #d5d2ca;
+  --line-soft: #e4e1da;
+  --bone: #16181c;
+  --dim: #61656d;
+  --flux: #d9430a;
+  --mesh: #12796a;
+
+  --primary-foreground: #fff;
+  --accent-foreground: #fff;
+  --primary-2-foreground: #fff;
+  --destructive-foreground: #fff;
 }
 
 @layer base {
@@ -114,154 +104,214 @@
   }
 
   body {
-    @apply font-sans antialiased bg-background text-foreground;
+    @apply antialiased bg-background text-foreground;
     font-family: var(--font-sans);
+    font-feature-settings: "cv05" 1;
   }
-  
-  h1, h2, h3 {
+
+  h1,
+  h2,
+  h3,
+  h4 {
     font-family: var(--font-heading);
-    font-weight: 700;
-    line-height: 1.2;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.04;
   }
-  
-  h1 {
-    font-size: 2.25rem;
+
+  ::selection {
+    background: var(--flux);
+    color: #14100d;
   }
-  
-  h2 {
-    font-size: 1.875rem;
-  }
-  
-  h3 {
-    font-size: 1.5rem;
-  }
-  
-  @media (min-width: 1024px) {
-    h1 {
-      font-size: 3.75rem;
-    }
-    
-    h2 {
-      font-size: 2.25rem;
-    }
-    
-    h3 {
-      font-size: 1.875rem;
-    }
+
+  :focus-visible {
+    outline: 2px solid var(--flux);
+    outline-offset: 2px;
   }
 }
 
 @layer components {
-  /* Glass Card Effect */
-  .glass {
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-  }
-  
-  .glass:hover {
-    border-color: var(--glass-hover);
-  }
-  
-  /* Gradient Text — uses raw HSL since --primary-2 is unwrapped HSL components. */
-  .gradient-text {
-    background: linear-gradient(135deg, hsl(262 84% 58%), hsl(195 100% 53%));
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
-  }
-  
-  /* Container */
   .container {
     margin: 0 auto;
-    padding: 0 1rem;
+    padding: 0 1.25rem;
     max-width: var(--container-max-width);
   }
-  
-  @media (min-width: 640px) {
-    .container {
-      padding: 0 1.5rem;
-    }
-  }
-  
+
   @media (min-width: 1024px) {
     .container {
       padding: 0 2rem;
     }
   }
-  
-  /* Section spacing */
-  .section {
-    padding-top: var(--section-spacing);
-    padding-bottom: var(--section-spacing);
+
+  /* A panel is a machined surface: flat fill, hairline edge, no blur. */
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
   }
-  
-  /* Button Gradients */
-  .btn-gradient {
-    background: linear-gradient(135deg, var(--primary), var(--primary-2));
-    color: white;
-    border: none;
-    transition: all 0.3s ease;
+
+  .panel-inset {
+    background: var(--panel-2);
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius);
   }
-  
-  .btn-gradient:hover {
-    box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.4);
-    transform: translateY(-1px);
+
+  /* Monospace micro-label — the interface's structural voice. */
+  .mono-label {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+
+  /* Registration ticks, as on a drawing sheet. */
+  .tick-frame {
+    position: relative;
+  }
+  .tick-frame::before,
+  .tick-frame::after {
+    content: "";
+    position: absolute;
+    width: 9px;
+    height: 9px;
+    border-color: var(--flux);
+    opacity: 0.9;
+  }
+  .tick-frame::before {
+    top: -1px;
+    left: -1px;
+    border-top: 1px solid;
+    border-left: 1px solid;
+  }
+  .tick-frame::after {
+    bottom: -1px;
+    right: -1px;
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+  }
+
+  /* Measured backdrop grid — construction lines, faint. */
+  .blueprint-grid {
+    background-image:
+      linear-gradient(to right, var(--line-soft) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--line-soft) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse 75% 70% at 50% 30%, #000 20%, transparent 78%);
+    -webkit-mask-image: radial-gradient(ellipse 75% 70% at 50% 30%, #000 20%, transparent 78%);
+  }
+
+  .btn-flux {
+    background: var(--flux);
+    color: var(--primary-foreground);
+    border: 1px solid var(--flux);
+    transition: filter 160ms ease, transform 160ms ease;
+  }
+  .btn-flux:hover {
+    filter: brightness(1.1);
+  }
+  .btn-flux:active {
+    transform: translateY(1px);
   }
 }
 
-/* PWA Offline Styles */
+/* ---- Signature: the viewport ---- */
+
+/* Slow yaw for the wireframe mesh. */
+@keyframes viewport-yaw {
+  to {
+    transform: rotateY(360deg);
+  }
+}
+
+/* Render sweep crossing the viewport, as a progressive renderer would. */
+@keyframes viewport-sweep {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  10%,
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(1100%);
+    opacity: 0;
+  }
+}
+
+.viewport-sweep {
+  animation: viewport-sweep 4.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Live-state pip. */
+@keyframes pip {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+.pip {
+  animation: pip 1.8s ease-in-out infinite;
+}
+
+@keyframes bar-indeterminate {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(400%);
+  }
+}
+.bar-indeterminate {
+  animation: bar-indeterminate 1.6s ease-in-out infinite;
+}
+
+/* ---- PWA chrome ---- */
 .offline {
   position: relative;
 }
 
 .offline::before {
-  content: "⚠️ You're currently offline";
+  content: "Offline — queued work resumes on reconnect";
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  background: var(--accent);
-  color: white;
+  background: var(--warn);
+  color: #14100d;
   text-align: center;
   padding: 8px;
-  font-size: 14px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
   z-index: 1000;
-  box-shadow: var(--shadow-lg);
 }
 
 .offline main {
   padding-top: 40px;
 }
 
-/* PWA Install Button Styles */
 .pwa-install-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 0.5rem;
   border-radius: var(--radius);
-  font-size: 0.875rem;
-  font-weight: 500;
-  line-height: 1.25rem;
-  transition: all 0.15s;
-  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   height: 2.5rem;
-  padding: 0.5rem 1rem;
-  background: linear-gradient(135deg, var(--primary), var(--primary-2));
-  color: white;
+  padding: 0 1rem;
+  background: var(--flux);
+  color: var(--primary-foreground);
   border: none;
-}
-
-.pwa-install-button:hover {
-  box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.4);
-  transform: translateY(-1px);
-}
-
-.pwa-install-button:focus {
-  outline: 2px solid var(--ring);
-  outline-offset: 2px;
+  cursor: pointer;
 }
 
 .pwa-install-banner {
@@ -269,12 +319,9 @@
   bottom: 1rem;
   left: 1rem;
   right: 1rem;
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: var(--panel);
+  border: 1px solid var(--line);
   border-radius: var(--radius);
-  box-shadow: var(--shadow-xl);
   padding: 1rem;
   z-index: 50;
 }
@@ -287,358 +334,12 @@
   }
 }
 
-/* Hero gradient background with animated beams */
-.hero-gradient {
-  position: relative;
-  background: hsl(var(--bg));
-  overflow: hidden;
-}
-
-.hero-gradient::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: 
-    radial-gradient(circle at 20% 20%, rgba(124, 58, 237, 0.3) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(34, 211, 238, 0.3) 0%, transparent 50%),
-    conic-gradient(from 0deg at 50% 50%, 
-      transparent 0deg,
-      rgba(124, 58, 237, 0.1) 60deg,
-      transparent 120deg,
-      rgba(34, 211, 238, 0.1) 180deg,
-      transparent 240deg,
-      rgba(245, 158, 11, 0.1) 300deg,
-      transparent 360deg
-    );
-  animation: hero-beam 20s linear infinite;
-  will-change: transform;
-}
-
-.hero-gradient::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: 
-    radial-gradient(ellipse 120% 80% at 40% 60%, rgba(124, 58, 237, 0.15) 0%, transparent 70%),
-    radial-gradient(ellipse 100% 60% at 80% 40%, rgba(34, 211, 238, 0.1) 0%, transparent 70%);
-  animation: hero-beam-slow 30s ease-in-out infinite alternate;
-  will-change: transform;
-}
-
-@keyframes hero-beam {
-  0% {
-    transform: rotate(0deg) scale(1);
-  }
-  33% {
-    transform: rotate(120deg) scale(1.1);
-  }
-  66% {
-    transform: rotate(240deg) scale(0.9);
-  }
-  100% {
-    transform: rotate(360deg) scale(1);
-  }
-}
-
-@keyframes hero-beam-slow {
-  0% {
-    transform: translateX(-10%) translateY(-10%) scale(1);
-    opacity: 0.7;
-  }
-  50% {
-    transform: translateX(5%) translateY(5%) scale(1.05);
-    opacity: 0.9;
-  }
-  100% {
-    transform: translateX(-5%) translateY(-15%) scale(0.95);
-    opacity: 0.6;
-  }
-}
-
-/* Animated blobs for hero canvas */
-@keyframes blob {
-  0%, 100% {
-    transform: translate(0px, 0px) scale(1);
-  }
-  33% {
-    transform: translate(30px, -50px) scale(1.1);
-  }
-  66% {
-    transform: translate(-20px, 20px) scale(0.9);
-  }
-}
-
-.blob {
-  animation: blob 7s infinite;
-  filter: blur(40px);
-  opacity: 0.7;
-}
-
-.blob:nth-child(2) {
-  animation-delay: 2s;
-}
-
-.blob:nth-child(3) {
-  animation-delay: 4s;
-}
-
-/* Trust bar logo styles */
-.trust-logo {
-  filter: grayscale(100%);
-  opacity: 0.5;
-  transition: all 0.3s ease;
-}
-
-.trust-logo:hover {
-  filter: grayscale(0%);
-  opacity: 0.8;
-}
-
-/* Workflow arrows */
-.workflow-arrow::after {
-  content: "→";
-  color: hsl(var(--primary));
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-left: 1rem;
-}
-
-/* Masonry grid for showcase */
-.masonry {
-  columns: 1;
-  column-gap: 1.5rem;
-}
-
-@media (min-width: 640px) {
-  .masonry {
-    columns: 2;
-  }
-}
-
-@media (min-width: 1024px) {
-  .masonry {
-    columns: 3;
-  }
-}
-
-.masonry-item {
-  break-inside: avoid;
-  margin-bottom: 1.5rem;
-}
-
-/* Code block styles */
-.code-block {
-  background: hsl(var(--muted));
-  border: 1px solid hsl(var(--border));
-  border-radius: var(--radius);
-  padding: 1rem;
-  font-family: var(--font-mono);
-  font-size: 0.875rem;
-  position: relative;
-}
-
-.code-block .copy-button {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  padding: 0.5rem;
-  border-radius: 0.375rem;
-  background: hsl(var(--background) / 0.8);
-  transition: background-color 0.2s;
-}
-
-.code-block .copy-button:hover {
-  background: hsl(var(--background));
-}
-
-/* Badge variants */
-.badge-beta {
-  background: hsl(var(--primary) / 0.2);
-  color: hsl(var(--primary));
-  border: 1px solid hsl(var(--primary) / 0.3);
-}
-
-.badge-live {
-  background: hsl(var(--success) / 0.2);
-  color: hsl(var(--success));
-  border: 1px solid hsl(var(--success) / 0.3);
-}
-
-.badge-pwa {
-  background: hsl(var(--accent) / 0.2);
-  color: hsl(var(--accent));
-  border: 1px solid hsl(var(--accent) / 0.3);
-}
-
-/* Shimmer loading effect */
-@keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
-}
-
-.shimmer {
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-  background-size: 200% 100%;
-  animation: shimmer 2s infinite;
-}
-
-/* Focus rings for accessibility */
-.focus-ring:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 2px hsl(var(--primary)), 0 0 0 4px hsl(var(--background));
-}
-
-/* Reduce motion for accessibility */
 @media (prefers-reduced-motion: reduce) {
-  .blob {
-    animation: none;
-  }
-  
-  .shimmer {
-    animation: none;
-  }
-
-  * {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-  }
-}
-
-/* ---- Aurora background (hero) ---- */
-.aurora-grid {
-  background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
-  background-size: 56px 56px;
-  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 30%, transparent 80%);
-  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 30%, transparent 80%);
-}
-
-.aurora-blob {
-  position: absolute;
-  border-radius: 9999px;
-  filter: blur(80px);
-  opacity: 0.55;
-  mix-blend-mode: screen;
-  will-change: transform;
-}
-
-.aurora-blob-1 {
-  top: -8%;
-  left: 10%;
-  width: 40rem;
-  height: 40rem;
-  background: radial-gradient(circle at 30% 30%, hsl(262 84% 58% / 0.65), transparent 65%);
-  animation: aurora-drift-1 18s ease-in-out infinite;
-}
-.aurora-blob-2 {
-  top: 5%;
-  right: 5%;
-  width: 36rem;
-  height: 36rem;
-  background: radial-gradient(circle at 70% 30%, hsl(195 100% 53% / 0.55), transparent 65%);
-  animation: aurora-drift-2 22s ease-in-out infinite;
-}
-.aurora-blob-3 {
-  bottom: -10%;
-  left: 30%;
-  width: 44rem;
-  height: 44rem;
-  background: radial-gradient(circle at 50% 50%, hsl(38 95% 51% / 0.35), transparent 70%);
-  animation: aurora-drift-3 26s ease-in-out infinite;
-}
-
-@keyframes aurora-drift-1 {
-  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
-  50%      { transform: translate3d(6%, 4%, 0) scale(1.08); }
-}
-@keyframes aurora-drift-2 {
-  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
-  50%      { transform: translate3d(-5%, 3%, 0) scale(1.05); }
-}
-@keyframes aurora-drift-3 {
-  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
-  50%      { transform: translate3d(3%, -4%, 0) scale(1.1); }
-}
-
-/* ---- Spotlight card ---- */
-.spotlight-card {
-  --mx: 50%;
-  --my: 50%;
-}
-.spotlight-card__glow {
-  background: radial-gradient(
-    480px circle at var(--mx) var(--my),
-    hsl(262 84% 58% / 0.35),
-    transparent 40%
-  );
-}
-
-/* ---- Shimmer button ---- */
-.shimmer-button {
-  isolation: isolate;
-}
-.shimmer-button__halo::before,
-.shimmer-button__halo::after {
-  content: "";
-  position: absolute;
-  inset: -150%;
-  z-index: 0;
-}
-.shimmer-button__halo::before {
-  background: conic-gradient(
-    from 0deg,
-    transparent 0deg,
-    var(--shimmer-color) 60deg,
-    transparent 120deg
-  );
-  animation: shimmer-spin 2.6s linear infinite;
-}
-.shimmer-button__halo::after {
-  background: conic-gradient(
-    from 180deg,
-    transparent 0deg,
-    hsl(195 100% 53%) 60deg,
-    transparent 120deg
-  );
-  animation: shimmer-spin 3.4s linear infinite reverse;
-  opacity: 0.55;
-}
-.shimmer-button__inner {
-  position: absolute;
-  inset: 1px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  border-radius: 9999px;
-  background: var(--shimmer-bg);
-  padding: 0 1.75rem;
-  transition: background 200ms ease;
-}
-.shimmer-button:hover .shimmer-button__inner {
-  background: color-mix(in oklab, var(--shimmer-bg), white 6%);
-}
-
-@keyframes shimmer-spin {
-  to { transform: rotate(360deg); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .aurora-blob,
-  .shimmer-button__halo::before,
-  .shimmer-button__halo::after {
-    animation: none !important;
   }
 }

@@ -4,26 +4,33 @@ import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
 
+/*
+  Buttons are machined, not pillowy: small radius, mono label, and a press that
+  actually moves. The default is the flux (action) colour; outline is the quiet
+  companion.
+*/
 const studioButtonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 focus-ring",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[var(--radius)] font-mono text-[11px] uppercase tracking-[0.14em] transition-all duration-150 disabled:pointer-events-none disabled:opacity-40 active:translate-y-px",
   {
     variants: {
       variant: {
-        gradient: "btn-gradient text-white shadow-lg",
+        default: "bg-[var(--flux)] text-[var(--primary-foreground)] hover:brightness-110",
+        gradient: "bg-[var(--flux)] text-[var(--primary-foreground)] hover:brightness-110",
+        mesh: "bg-[var(--mesh)] text-[var(--primary-2-foreground)] hover:brightness-110",
         outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
+          "border border-border bg-transparent text-foreground hover:border-[var(--flux)] hover:text-[var(--flux)]",
+        ghost: "text-muted-foreground hover:bg-secondary hover:text-foreground",
+        link: "text-[var(--flux)] underline-offset-4 hover:underline",
       },
       size: {
-        default: "h-10 px-6 py-2",
-        sm: "h-8 rounded-md px-3",
-        lg: "h-11 rounded-lg px-8",
+        default: "h-10 px-5",
+        sm: "h-8 px-3 text-[10px]",
+        lg: "h-12 px-7 text-xs",
         icon: "h-10 w-10",
       },
     },
     defaultVariants: {
-      variant: "gradient",
+      variant: "default",
       size: "default",
     },
   }

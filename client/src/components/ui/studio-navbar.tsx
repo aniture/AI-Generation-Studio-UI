@@ -1,71 +1,47 @@
 import { Link, useLocation } from "wouter";
 import { useState, useEffect } from "react";
-import { Zap, Menu, X, Smartphone, Download } from "lucide-react";
+import { Menu, X, Moon, Sun, Download } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
 import { StudioButton } from "@/components/ui/studio-button";
-import { Badge } from "@/components/ui/badge";
 
 interface CreditsResponse {
   credits: number;
 }
 
-// Theme toggle hook
 function useTheme() {
-  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-    if (typeof window !== 'undefined') {
-      const savedTheme = localStorage.getItem('theme') as 'light' | 'dark';
-      if (savedTheme) return savedTheme;
-      return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
-    }
-    return 'dark';
+  const [theme, setTheme] = useState<"light" | "dark">(() => {
+    if (typeof window === "undefined") return "dark";
+    const saved = localStorage.getItem("theme") as "light" | "dark" | null;
+    if (saved) return saved;
+    return document.documentElement.classList.contains("dark") ? "dark" : "light";
   });
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      if (theme === 'dark') {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-      localStorage.setItem('theme', theme);
-    }
+    document.documentElement.classList.toggle("dark", theme === "dark");
+    localStorage.setItem("theme", theme);
   }, [theme]);
 
-  const toggleTheme = () => {
-    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
-  };
-
-  return { theme, toggleTheme };
+  return { theme, toggleTheme: () => setTheme((t) => (t === "dark" ? "light" : "dark")) };
 }
 
-// PWA install hook
 function usePWAInstall() {
   const [installPrompt, setInstallPrompt] = useState<any>(null);
   const [isInstallable, setIsInstallable] = useState(false);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    const handleBeforeInstallPrompt = (e: Event) => {
+    const handler = (e: Event) => {
       e.preventDefault();
       setInstallPrompt(e);
       setIsInstallable(true);
     };
-
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-
-    // Cleanup event listener
-    return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    };
+    window.addEventListener("beforeinstallprompt", handler);
+    return () => window.removeEventListener("beforeinstallprompt", handler);
   }, []);
 
   const installApp = async () => {
     if (!installPrompt) return;
-    
     const result = await installPrompt.prompt();
-    if (result.outcome === 'accepted') {
+    if (result.outcome === "accepted") {
       setInstallPrompt(null);
       setIsInstallable(false);
     }
@@ -74,16 +50,34 @@ function usePWAInstall() {
   return { isInstallable, installApp };
 }
 
+/* The wordmark carries the identity: a mesh glyph plus a wide, tight logotype. */
+function Wordmark() {
+  return (
+    <div className="flex items-center gap-2.5">
+      <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden>
+        <path
+          d="M10 1.5 18 6v8l-8 4.5L2 14V6z"
+          fill="none"
+          stroke="var(--flux)"
+          strokeWidth="1.25"
+          strokeLinejoin="round"
+        />
+        <path d="M2 6l8 4.5L18 6M10 10.5v8" fill="none" stroke="var(--mesh)" strokeWidth="1" />
+      </svg>
+      <span className="font-heading text-lg font-extrabold tracking-tight">Forge</span>
+    </div>
+  );
+}
+
 export default function StudioNavbar() {
   const [location] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const { isInstallable, installApp } = usePWAInstall();
-  
-  // Fetch current user credits
+
   const { data: creditsData, isLoading } = useQuery<CreditsResponse>({
-    queryKey: ['/api/credits'],
-    refetchInterval: 30000, // Refresh every 30 seconds
+    queryKey: ["/api/credits"],
+    refetchInterval: 30000,
   });
 
   const navItems = [
@@ -93,154 +87,142 @@ export default function StudioNavbar() {
     { href: "/playground", label: "API", testId: "nav-playground" },
   ];
 
+  const credits = isLoading ? "—" : String(creditsData?.credits ?? 0);
+
   return (
-    <nav className="sticky top-0 z-50 glass backdrop-blur-xl border-b border-border/50">
-      <div className="container mx-auto">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link href="/">
-            <div className="flex items-center gap-3 hover:opacity-80 transition-opacity" data-testid="logo">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary-2 flex items-center justify-center">
-                <Zap className="w-5 h-5 text-white" />
-              </div>
-              <span className="font-heading font-bold text-xl gradient-text">AI Studio</span>
-            </div>
+    <nav className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur">
+      <div className="container">
+        <div className="flex h-14 items-center justify-between">
+          <Link href="/" data-testid="logo">
+            <Wordmark />
           </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-1">
-            {navItems.map((item) => (
-              <Link key={item.href} href={item.href}>
-                <Button
-                  variant={location === item.href ? "default" : "ghost"}
-                  size="sm"
-                  className="relative"
-                  data-testid={item.testId}
-                >
-                  {item.label}
-                  {location === item.href && (
-                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-primary rounded-full"></div>
-                  )}
-                </Button>
-              </Link>
-            ))}
+          {/* Nav items read as tabs on an instrument, not pills */}
+          <div className="hidden items-center gap-7 md:flex">
+            {navItems.map((item) => {
+              const active = location === item.href;
+              return (
+                <Link key={item.href} href={item.href}>
+                  <span
+                    className={`relative font-mono text-[11px] uppercase tracking-[0.14em] transition-colors ${
+                      active
+                        ? "text-foreground"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                    data-testid={item.testId}
+                  >
+                    {item.label}
+                    {active && (
+                      <span className="absolute -bottom-[18px] left-0 h-px w-full bg-[var(--flux)]" />
+                    )}
+                  </span>
+                </Link>
+              );
+            })}
           </div>
-          
-          {/* Right side actions */}
-          <div className="flex items-center gap-4">
-            {/* PWA Install */}
+
+          <div className="flex items-center gap-3">
+            {/* Credits as a instrument readout */}
+            <div
+              className="hidden items-center gap-2 border border-border px-2.5 py-1 sm:flex"
+              data-testid="credits-display"
+            >
+              <span className="mono-label">cr</span>
+              <span className="font-mono text-[13px] tabular-nums text-[var(--mesh)]">
+                {credits}
+              </span>
+            </div>
+
             {isInstallable && (
               <StudioButton
                 variant="outline"
                 size="sm"
                 onClick={installApp}
-                className="hidden md:inline-flex gap-2"
+                className="hidden md:inline-flex"
                 data-testid="button-install-app"
               >
-                <Download className="w-4 h-4" />
-                Install App
+                <Download className="h-3.5 w-3.5" />
+                Install
               </StudioButton>
             )}
-            
-            {/* Credits Display */}
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full glass border border-accent/20">
-              <div className="w-2 h-2 bg-accent rounded-full animate-pulse"></div>
-              <span className="text-sm font-medium text-accent" data-testid="credits-display">
-                {isLoading ? "..." : `${creditsData?.credits ?? 0} credits`}
-              </span>
-            </div>
 
-            {/* Theme Toggle */}
-            <Button
-              variant="ghost"
-              size="icon"
+            <button
               onClick={toggleTheme}
-              className="hidden md:inline-flex"
+              className="hidden h-8 w-8 items-center justify-center text-muted-foreground transition-colors hover:text-foreground md:inline-flex"
+              aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
               data-testid="button-theme-toggle"
             >
-              {theme === 'dark' ? '☀️' : '🌙'}
-            </Button>
-            
-            {/* Launch Studio CTA */}
+              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </button>
+
             <Link href="/generate">
-              <StudioButton 
-                size="sm" 
-                className="hidden md:inline-flex"
-                data-testid="button-launch-studio"
-              >
-                Launch Studio
+              <StudioButton size="sm" className="hidden md:inline-flex" data-testid="button-launch-studio">
+                Open studio
               </StudioButton>
             </Link>
 
-            {/* Mobile menu button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="md:hidden"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            <button
+              className="inline-flex h-8 w-8 items-center justify-center text-foreground md:hidden"
+              onClick={() => setMobileMenuOpen((v) => !v)}
+              aria-label="Toggle menu"
+              aria-expanded={mobileMenuOpen}
               data-testid="button-mobile-menu"
             >
               {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </Button>
+            </button>
           </div>
         </div>
 
-        {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden py-4 space-y-4 border-t border-border/50">
+          <div className="space-y-1 border-t border-border py-4 md:hidden">
             {navItems.map((item) => (
               <Link key={item.href} href={item.href}>
-                <Button
-                  variant={location === item.href ? "default" : "ghost"}
-                  className="w-full justify-start"
+                <div
+                  className={`px-1 py-2.5 font-mono text-xs uppercase tracking-[0.14em] ${
+                    location === item.href ? "text-[var(--flux)]" : "text-muted-foreground"
+                  }`}
                   onClick={() => setMobileMenuOpen(false)}
                   data-testid={`${item.testId}-mobile`}
                 >
                   {item.label}
-                </Button>
+                </div>
               </Link>
             ))}
-            
-            {/* Mobile credits */}
-            <div className="flex items-center justify-between px-4 py-2">
-              <span className="text-sm text-muted-foreground">Credits:</span>
-              <Badge variant="beta" data-testid="credits-mobile">
-                {isLoading ? "..." : `${creditsData?.credits ?? 0}`}
-              </Badge>
+
+            <div className="flex items-center justify-between border-t border-border pt-4">
+              <span className="mono-label">credits</span>
+              <span className="font-mono text-sm text-[var(--mesh)]" data-testid="credits-mobile">
+                {credits}
+              </span>
             </div>
-            
-            {/* Mobile PWA Install */}
+
+            <button
+              onClick={toggleTheme}
+              className="flex w-full items-center gap-2 py-2.5 font-mono text-xs uppercase tracking-[0.14em] text-muted-foreground"
+              data-testid="button-theme-toggle-mobile"
+            >
+              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              {theme === "dark" ? "Light" : "Dark"}
+            </button>
+
             {isInstallable && (
               <StudioButton
                 variant="outline"
                 onClick={installApp}
-                className="w-full gap-2"
+                className="w-full"
                 data-testid="button-install-app-mobile"
               >
-                <Smartphone className="w-4 h-4" />
-                Install App
+                Install app
               </StudioButton>
             )}
-            
-            {/* Mobile theme toggle */}
-            <Button
-              variant="ghost"
-              onClick={toggleTheme}
-              className="w-full justify-start gap-3"
-              data-testid="button-theme-toggle-mobile"
-            >
-              {theme === 'dark' ? '☀️' : '🌙'}
-              <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
-            </Button>
-            
-            {/* Mobile Launch Studio */}
+
             <Link href="/generate">
-              <StudioButton 
-                className="w-full" 
+              <StudioButton
+                className="w-full"
                 onClick={() => setMobileMenuOpen(false)}
                 data-testid="button-launch-studio-mobile"
               >
-                Launch Studio
+                Open studio
               </StudioButton>
             </Link>
           </div>

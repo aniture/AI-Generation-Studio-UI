@@ -1,147 +1,148 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Code, Send, Globe } from "lucide-react";
+import { useState } from "react";
+import { Check, Copy } from "lucide-react";
+
+const BASE = "https://api.forge.dev";
+
+interface Endpoint {
+  method: "POST" | "GET";
+  path: string;
+  summary: string;
+  request: string;
+  response: string;
+  responseLabel: string;
+}
+
+const endpoints: Endpoint[] = [
+  {
+    method: "POST",
+    path: "/v1/jobs",
+    summary: "Queue a generation. Returns immediately with a job id.",
+    request: `curl -X POST ${BASE}/v1/jobs \\
+  -H "Authorization: Bearer $FORGE_KEY" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "tool": "text2mesh",
+    "prompt": "brass astrolabe, engraved",
+    "options": { "format": "glb" }
+  }'`,
+    responseLabel: "202 Accepted",
+    response: `{
+  "id": "job_3910179b4678",
+  "status": "queued",
+  "tool": "text2mesh",
+  "creditsUsed": 5
+}`,
+  },
+  {
+    method: "GET",
+    path: "/v1/jobs/:id",
+    summary: "Poll a job. Assets appear once status is completed.",
+    request: `curl ${BASE}/v1/jobs/job_3910179b4678 \\
+  -H "Authorization: Bearer $FORGE_KEY"`,
+    responseLabel: "200 OK",
+    response: `{
+  "id": "job_3910179b4678",
+  "status": "completed",
+  "tool": "text2mesh",
+  "assetUrls": [
+    "${BASE}/assets/job_3910179b4678.glb"
+  ],
+  "meta": { "tris": 24576, "durationMs": 38210 }
+}`,
+  },
+];
+
+const limits = [
+  { k: "rate limit", v: "100 req / min / key" },
+  { k: "typical job", v: "5–40 s" },
+  { k: "retention", v: "30 days" },
+  { k: "formats", v: "glb · usdz · fbx · png · mp4" },
+];
+
+function CodeBlock({ label, code }: { label: string; code: string }) {
+  const [copied, setCopied] = useState(false);
+
+  async function copy() {
+    await navigator.clipboard.writeText(code);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1600);
+  }
+
+  return (
+    <div className="panel-inset overflow-hidden">
+      <div className="flex items-center justify-between border-b border-border px-3 py-2">
+        <span className="mono-label">{label}</span>
+        <button
+          onClick={copy}
+          className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground transition-colors hover:text-[var(--flux)]"
+          data-testid={`button-copy-${label.replace(/\s+/g, "-")}`}
+        >
+          {copied ? <Check className="h-3 w-3 text-[var(--mesh)]" /> : <Copy className="h-3 w-3" />}
+          {copied ? "Copied" : "Copy"}
+        </button>
+      </div>
+      <pre className="overflow-x-auto p-4 font-mono text-[12px] leading-relaxed text-foreground">
+        {code}
+      </pre>
+    </div>
+  );
+}
 
 export default function Playground() {
   return (
-    <div className="container mx-auto py-8 px-4">
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold">API Playground</h1>
-          <p className="text-muted-foreground">
-            Test and explore our API endpoints interactively
-          </p>
+    <div>
+      <div className="border-b border-border">
+        <div className="container py-5">
+          <div className="mono-label">reference</div>
+          <h1 className="mt-1.5 text-2xl">API</h1>
         </div>
+      </div>
 
-        <Tabs defaultValue="webhook" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="webhook" data-testid="tab-webhook">Webhook</TabsTrigger>
-            <TabsTrigger value="status" data-testid="tab-status">Job Status</TabsTrigger>
-          </TabsList>
+      <div className="container space-y-10 py-8">
+        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+          Two calls run the whole pipeline: queue a job, then poll it or wait for the
+          webhook. Every response carries the credits it cost.
+        </p>
 
-          <TabsContent value="webhook" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="flex items-center gap-2">
-                      <Send className="w-5 h-5" />
-                      POST /webhook
-                    </CardTitle>
-                    <CardDescription>
-                      Submit a new AI generation job
-                    </CardDescription>
-                  </div>
-                  <Badge variant="secondary">POST</Badge>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="bg-muted rounded-lg p-4">
-                  <h4 className="font-medium mb-2">Example Request</h4>
-                  <pre className="text-sm text-muted-foreground">
-{`curl -X POST http://localhost:5000/webhook \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "jobType": "text-to-image",
-    "inputText": "A beautiful sunset over mountains",
-    "userId": "user123"
-  }'`}
-                  </pre>
-                </div>
-                <div className="bg-muted rounded-lg p-4">
-                  <h4 className="font-medium mb-2">Example Response</h4>
-                  <pre className="text-sm text-muted-foreground">
-{`{
-  "status": "received",
-  "jobId": "3910179b-4678-47c1-86e6-e66a4a1bdc4a"
-}`}
-                  </pre>
-                </div>
-                <Button className="w-full" data-testid="button-try-webhook">
-                  <Code className="w-4 h-4 mr-2" />
-                  Try it out
-                </Button>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="status" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="flex items-center gap-2">
-                      <Globe className="w-5 h-5" />
-                      GET /api/job/:jobId
-                    </CardTitle>
-                    <CardDescription>
-                      Check the status of a generation job
-                    </CardDescription>
-                  </div>
-                  <Badge variant="outline">GET</Badge>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="bg-muted rounded-lg p-4">
-                  <h4 className="font-medium mb-2">Example Request</h4>
-                  <pre className="text-sm text-muted-foreground">
-{`curl -X GET http://localhost:5000/api/job/3910179b-4678-47c1-86e6-e66a4a1bdc4a`}
-                  </pre>
-                </div>
-                <div className="bg-muted rounded-lg p-4">
-                  <h4 className="font-medium mb-2">Example Response (Pending)</h4>
-                  <pre className="text-sm text-muted-foreground">
-{`{
-  "id": "3910179b-4678-47c1-86e6-e66a4a1bdc4a",
-  "status": "pending",
-  "jobType": "text-to-image",
-  "inputText": "A beautiful sunset over mountains",
-  "userId": "user123",
-  "createdAt": "2025-09-12T03:54:39.611Z"
-}`}
-                  </pre>
-                </div>
-                <div className="bg-muted rounded-lg p-4">
-                  <h4 className="font-medium mb-2">Example Response (Complete)</h4>
-                  <pre className="text-sm text-muted-foreground">
-{`{
-  "id": "3910179b-4678-47c1-86e6-e66a4a1bdc4a",
-  "status": "done",
-  "jobType": "text-to-image",
-  "inputText": "A beautiful sunset over mountains",
-  "userId": "user123",
-  "createdAt": "2025-09-12T03:54:39.611Z",
-  "resultUrl": "https://example.com/generated-content.png"
-}`}
-                  </pre>
-                </div>
-                <Button className="w-full" data-testid="button-try-status">
-                  <Code className="w-4 h-4 mr-2" />
-                  Try it out
-                </Button>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Rate Limits & Usage</CardTitle>
-            <CardDescription>
-              Important information about API usage
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2 text-sm">
-              <p><strong>Rate Limit:</strong> 100 requests per minute per user</p>
-              <p><strong>Job Processing:</strong> Typical processing time is 5-30 seconds</p>
-              <p><strong>File Retention:</strong> Generated assets are stored for 30 days</p>
-              <p><strong>Supported Formats:</strong> PNG, JPG, MP4, GLB, OBJ</p>
+        {endpoints.map((ep) => (
+          <section key={ep.path} className="panel overflow-hidden">
+            <div className="flex flex-wrap items-center gap-3 border-b border-border p-5">
+              <span
+                className={`rounded-[var(--radius)] border px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em] ${
+                  ep.method === "POST"
+                    ? "border-[var(--flux)]/40 text-[var(--flux)]"
+                    : "border-[var(--mesh)]/40 text-[var(--mesh)]"
+                }`}
+              >
+                {ep.method}
+              </span>
+              <code className="font-mono text-sm text-foreground">{ep.path}</code>
+              <p className="w-full text-sm text-muted-foreground sm:w-auto sm:flex-1 sm:text-right">
+                {ep.summary}
+              </p>
             </div>
-          </CardContent>
-        </Card>
+
+            <div className="grid gap-4 p-5 lg:grid-cols-2">
+              <CodeBlock label="request" code={ep.request} />
+              <CodeBlock label={ep.responseLabel} code={ep.response} />
+            </div>
+          </section>
+        ))}
+
+        <section>
+          <div className="flex items-center gap-3">
+            <span className="h-px w-6 bg-[var(--flux)]" />
+            <span className="mono-label">limits</span>
+          </div>
+          <dl className="mt-6 grid grid-cols-2 gap-x-8 gap-y-6 border-t border-border pt-6 sm:grid-cols-4">
+            {limits.map((l) => (
+              <div key={l.k}>
+                <dt className="mono-label">{l.k}</dt>
+                <dd className="mt-1.5 font-mono text-[13px] text-foreground">{l.v}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
       </div>
     </div>
   );

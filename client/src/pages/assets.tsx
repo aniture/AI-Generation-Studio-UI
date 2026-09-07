@@ -32,20 +32,20 @@ function getJobTypeIcon(jobType: string) {
 
 function getJobTypeColor(jobType: string) {
   switch (jobType) {
-    case "text-to-image":
-      return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300";
     case "text-to-3D":
-      return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
+      return "border-[var(--flux)]/40 text-[var(--flux)]";
+    case "text-to-image":
+      return "border-[var(--mesh)]/40 text-[var(--mesh)]";
     case "image-to-video":
-      return "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300";
+      return "border-[var(--warn)]/40 text-[var(--warn)]";
     default:
-      return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300";
+      return "border-border text-muted-foreground";
   }
 }
 
 function AssetThumbnail({ asset }: { asset: Asset }) {
   return (
-    <div className="aspect-video rounded-lg overflow-hidden bg-muted">
+    <div className="aspect-video overflow-hidden rounded-[var(--radius)] border border-border bg-[var(--ink)]">
       <img
         src={asset.url}
         alt={asset.prompt}
@@ -53,18 +53,10 @@ function AssetThumbnail({ asset }: { asset: Asset }) {
         onError={(e) => {
           const target = e.target as HTMLImageElement;
           target.parentElement!.innerHTML = `
-            <div class="aspect-video rounded-lg flex items-center justify-center text-white font-medium text-lg bg-gradient-to-br ${
-              asset.jobType === "text-to-image" ? "from-blue-400 to-blue-600" :
-              asset.jobType === "text-to-3D" ? "from-green-400 to-green-600" :
-              asset.jobType === "image-to-video" ? "from-purple-400 to-purple-600" :
-              "from-gray-400 to-gray-600"
-            }">
-              <div class="flex flex-col items-center gap-2">
-                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
-                </svg>
-                <span class="text-sm">${asset.jobType.replace("-", " ")}</span>
-              </div>
+            <div class="blueprint-grid aspect-video flex items-center justify-center">
+              <span style="font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--dim)">
+                ${asset.jobType.replace("-", " ")} · preview unavailable
+              </span>
             </div>
           `;
         }}
@@ -89,12 +81,14 @@ export default function Assets() {
 
   if (error) {
     return (
-      <div className="container mx-auto py-8 px-4">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold mb-4">Asset Library</h1>
-          <div className="bg-red-50 dark:bg-red-950 p-4 rounded-lg border border-red-200 dark:border-red-800">
-            <p className="text-red-700 dark:text-red-300">
-              Failed to load assets. Please try again later.
+      <div className="container py-8">
+        <div>
+          <div className="mono-label">library</div>
+          <h1 className="mt-1.5 text-2xl">Assets</h1>
+          <div className="mt-6 rounded-[var(--radius)] border border-[var(--fail)]/40 p-4">
+            <div className="mono-label !text-[var(--fail)]">couldn't load</div>
+            <p className="mt-1.5 text-sm text-muted-foreground">
+              The asset library didn't respond. Reload the page to try again.
             </p>
           </div>
         </div>
@@ -103,21 +97,19 @@ export default function Assets() {
   }
 
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className="container py-8">
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold">Asset Library</h1>
-            <p className="text-muted-foreground">
-              Browse and manage your generated content
-            </p>
+            <div className="mono-label">library</div>
+            <h1 className="mt-1.5 text-2xl">Assets</h1>
           </div>
           <div className="flex items-center gap-2">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <Input 
-                placeholder="Search assets..." 
-                className="pl-10"
+                placeholder="Search prompts and types" 
+                className="panel-inset pl-9 font-mono text-xs"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 data-testid="input-search-assets"
@@ -150,21 +142,21 @@ export default function Assets() {
             ))}
           </div>
         ) : filteredAssets.length === 0 ? (
-          <div className="bg-muted/50 rounded-lg p-6 text-center">
+          <div className="panel p-10 text-center">
             <div className="space-y-2">
-              <h3 className="text-lg font-semibold">
-                {searchTerm ? "No matching assets found" : "No Assets Yet"}
+              <h3 className="text-lg font-bold tracking-tight">
+                {searchTerm ? "Nothing matches that search" : "The library is empty"}
               </h3>
-              <p className="text-muted-foreground">
+              <p className="mx-auto max-w-md text-sm text-muted-foreground">
                 {searchTerm 
-                  ? `No assets match "${searchTerm}". Try a different search term.`
-                  : "Your generated content will appear here once you start creating with our AI tools."
+                  ? `No assets match "${searchTerm}". Try a shorter term or clear the search.`
+                  : "Finished generations land here, with their prompt and download links."
                 }
               </p>
               {!searchTerm && (
                 <Link href="/generate">
-                  <Button className="mt-4" data-testid="button-create-first-asset">
-                    Generate Your First Asset
+                  <Button className="mt-4 rounded-[var(--radius)] bg-[var(--flux)] font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--primary-foreground)] hover:brightness-110" data-testid="button-create-first-asset">
+                    Generate an asset
                   </Button>
                 </Link>
               )}
@@ -175,7 +167,7 @@ export default function Assets() {
                   onClick={() => setSearchTerm("")}
                   data-testid="button-clear-search"
                 >
-                  Clear Search
+                  Clear search
                 </Button>
               )}
             </div>
@@ -183,17 +175,17 @@ export default function Assets() {
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredAssets.map((asset) => (
-              <Card key={asset.id} className="group hover:shadow-lg transition-shadow" data-testid={`asset-card-${asset.id}`}>
+              <Card key={asset.id} className="panel group transition-colors hover:border-[var(--mesh)]/50" data-testid={`asset-card-${asset.id}`}>
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
                     <Badge 
-                      className={`flex items-center gap-1 ${getJobTypeColor(asset.jobType)}`}
+                      className={`flex items-center gap-1.5 rounded-[var(--radius)] border bg-transparent font-mono text-[10px] uppercase tracking-[0.12em] ${getJobTypeColor(asset.jobType)}`}
                       data-testid={`badge-job-type-${asset.jobType}`}
                     >
                       {getJobTypeIcon(asset.jobType)}
                       {asset.jobType.replace("-", " ")}
                     </Badge>
-                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <div className="mono-label flex items-center gap-1.5">
                       <Calendar className="w-3 h-3" />
                       <span data-testid={`date-${asset.id}`}>
                         {format(new Date(asset.createdAt), "MMM d")}
@@ -204,14 +196,14 @@ export default function Assets() {
                 <CardContent>
                   <AssetThumbnail asset={asset} />
                   <div className="space-y-2 mt-3">
-                    <h4 className="font-medium line-clamp-2 text-sm" data-testid={`prompt-${asset.id}`}>
+                    <h4 className="line-clamp-2 font-mono text-xs leading-relaxed text-muted-foreground" data-testid={`prompt-${asset.id}`}>
                       {asset.prompt}
                     </h4>
                     <div className="flex gap-2">
                       <Button 
                         size="sm" 
                         variant="outline" 
-                        className="flex-1"
+                        className="flex-1 rounded-[var(--radius)] font-mono text-[10px] uppercase tracking-[0.12em]"
                         onClick={() => window.open(asset.url, '_blank')}
                         data-testid={`button-view-${asset.id}`}
                       >
@@ -221,7 +213,7 @@ export default function Assets() {
                       <Button 
                         size="sm" 
                         variant="outline" 
-                        className="flex-1"
+                        className="flex-1 rounded-[var(--radius)] font-mono text-[10px] uppercase tracking-[0.12em]"
                         onClick={() => {
                           window.location.href = `/api/assets/${asset.id}/download`;
                         }}
@@ -239,8 +231,8 @@ export default function Assets() {
         )}
 
         {filteredAssets.length > 0 && (
-          <div className="text-center text-sm text-muted-foreground">
-            Showing {filteredAssets.length} of {assets.length} assets
+          <div className="mono-label border-t border-border pt-5">
+            {filteredAssets.length} of {assets.length} assets
           </div>
         )}
       </div>

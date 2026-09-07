@@ -1,359 +1,214 @@
 import { motion } from "framer-motion";
 import { Link } from "wouter";
-import { Zap, Sparkles, Box, Video, Database, Settings, ArrowRight, Star } from "lucide-react";
-import { GlassCard } from "@/components/ui/glass-card";
+import { ArrowRight, Box, Image as ImageIcon, Layers, Video } from "lucide-react";
+import { Viewport } from "@/components/ui/viewport";
 import { StudioButton } from "@/components/ui/studio-button";
 import { SectionTitle } from "@/components/ui/section-title";
-import { Badge } from "@/components/ui/badge";
-import { AuroraBackground } from "@/components/ui/aurora-background";
-import { SpotlightCard } from "@/components/ui/spotlight-card";
-import { ShimmerButton } from "@/components/ui/shimmer-button";
+import { PanelCard } from "@/components/ui/panel-card";
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.2,
-      delayChildren: 0.3
-    }
-  }
-};
+// Spec strip — the numbers a technical artist actually checks before adopting a tool.
+const specs = [
+  { k: "export", v: "glb · usdz · fbx" },
+  { k: "turnaround", v: "~40s / mesh" },
+  { k: "topology", v: "quad-dominant" },
+  { k: "delivery", v: "webhook + poll" },
+];
 
-const cardVariants = {
-  hidden: { 
-    opacity: 0, 
-    y: 50,
-    scale: 0.9 
+// A real ordered sequence, so the numbering carries information.
+const pipeline = [
+  {
+    n: "01",
+    title: "Prompt",
+    body: "Describe the object in plain language. Reference images are optional and stack with the text.",
   },
-  visible: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: {
-      type: "spring",
-      stiffness: 100,
-      damping: 15,
-      duration: 0.6
-    }
-  }
-};
+  {
+    n: "02",
+    title: "Mesh",
+    body: "A watertight base mesh is generated and remeshed to quad-dominant topology, then UV-unwrapped.",
+  },
+  {
+    n: "03",
+    title: "Texture",
+    body: "PBR maps are synthesised against the unwrap — albedo, normal, roughness, metalness.",
+  },
+  {
+    n: "04",
+    title: "Export",
+    body: "Converted to your target format and posted to your webhook, or pulled from the asset library.",
+  },
+];
 
-const heroVariants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.8,
-      ease: "easeOut"
-    }
-  }
-};
+const tools = [
+  {
+    icon: ImageIcon,
+    title: "Text to image",
+    body: "FLUX.1 renders concept frames and reference plates at up to 2K.",
+    cost: 1,
+    href: "/generate",
+  },
+  {
+    icon: Box,
+    title: "Text to 3D",
+    body: "A full mesh with clean topology and a usable unwrap, straight from a sentence.",
+    cost: 5,
+    href: "/generate",
+    lead: true,
+  },
+  {
+    icon: Layers,
+    title: "AI texturing",
+    body: "Bring your own mesh and get a coherent PBR material set baked to its UVs.",
+    cost: 3,
+    href: "/generate",
+  },
+  {
+    icon: Video,
+    title: "Image to video",
+    body: "Turn a still plate into a short camera move for turntables and pitch decks.",
+    cost: 4,
+    href: "/generate",
+  },
+];
 
 export default function Home() {
-  const mainFeatures = [
-    {
-      icon: Sparkles,
-      title: "Generate Content",
-      description: "Create AI-powered content with text prompts",
-      details: "Transform your ideas into visual content using our advanced AI generation tools.",
-      href: "/generate",
-      buttonText: "Launch Studio",
-      primary: true,
-      testId: "button-go-generate"
-    },
-    {
-      icon: Database,
-      title: "Asset Library", 
-      description: "Manage your generated content assets",
-      details: "Browse, organize, and download all your previously generated content.",
-      href: "/assets",
-      buttonText: "View Assets",
-      testId: "button-go-assets"
-    },
-    {
-      icon: Settings,
-      title: "API Playground",
-      description: "Test and explore our API endpoints", 
-      details: "Experiment with our API directly from your browser with interactive tools.",
-      href: "/playground", 
-      buttonText: "Open Playground",
-      testId: "button-go-playground"
-    }
-  ];
-
-  const capabilities = [
-    {
-      icon: Sparkles,
-      title: "Text→3D",
-      description: "Create 3D models and assets from simple text prompts",
-      color: "text-primary"
-    },
-    {
-      icon: Box,
-      title: "Image→3D", 
-      description: "Transform images into detailed 3D objects and scenes",
-      color: "text-primary-2"
-    },
-    {
-      icon: Video,
-      title: "AI Texturing",
-      description: "Generate realistic textures and materials for 3D content",
-      color: "text-accent"
-    }
-  ];
-
   return (
-    <div className="min-h-screen">
-      {/* Hero Section */}
-      <AuroraBackground className="py-24 md:py-32">
-        <div className="container relative z-10">
-          <motion.div
-            className="text-center space-y-8 max-w-4xl mx-auto"
-            variants={heroVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            <motion.div className="space-y-4">
-              <Badge variant="beta" className="mb-4">
-                ✨ Now in Beta
-              </Badge>
-              <h1 className="text-5xl md:text-7xl font-heading font-bold leading-tight tracking-tight">
-                Create, texture &
-                <span className="gradient-text block">publish 3D with AI</span>
+    <div>
+      {/* ---- Hero: the viewport is the argument ---- */}
+      <section className="relative overflow-hidden border-b border-border">
+        <div className="blueprint-grid pointer-events-none absolute inset-0 opacity-70" />
+        <div className="container relative py-16 md:py-24">
+          <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,30rem)] lg:gap-16">
+            <div className="min-w-0">
+              <div className="mono-label">
+                text → mesh → texture → export
+              </div>
+
+              <h1 className="mt-5 text-[2.5rem] leading-[1.0] sm:text-5xl lg:text-[3.5rem]">
+                Prompt in.
+                <span className="block text-[var(--flux)]">Production mesh out.</span>
               </h1>
-              <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-                Professional AI-powered 3D content generation platform.
-                From concept to creation in seconds, not hours.
+
+              <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
+                Forge turns a sentence into a watertight, UV-unwrapped asset — textured,
+                converted to your format, and delivered to your pipeline. No retopology
+                pass, no cleanup afternoon.
               </p>
-            </motion.div>
+
+              <div className="mt-9 flex flex-wrap items-center gap-3">
+                <Link href="/generate">
+                  <StudioButton size="lg" data-testid="hero-launch-studio">
+                    Open the studio
+                    <ArrowRight className="h-4 w-4" />
+                  </StudioButton>
+                </Link>
+                <Link href="/playground">
+                  <StudioButton variant="outline" size="lg" data-testid="hero-view-api">
+                    Read the API
+                  </StudioButton>
+                </Link>
+              </div>
+
+              {/* Spec strip replaces generic trust badges */}
+              <dl className="mt-12 grid max-w-2xl grid-cols-2 gap-x-6 gap-y-5 border-t border-border pt-7 sm:grid-cols-4">
+                {specs.map((s) => (
+                  <div key={s.k}>
+                    <dt className="mono-label">{s.k}</dt>
+                    <dd className="mt-1.5 font-mono text-[13px] text-foreground">{s.v}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
 
             <motion.div
-              className="flex flex-col sm:flex-row gap-4 justify-center items-center"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5, duration: 0.6 }}
+              initial={{ opacity: 0, scale: 0.97 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.7, ease: "easeOut", delay: 0.15 }}
             >
-              <Link href="/generate">
-                <ShimmerButton data-testid="hero-launch-studio" className="h-14 text-base">
-                  <Zap className="w-5 h-5" />
-                  Launch Studio
-                  <ArrowRight className="w-4 h-4" />
-                </ShimmerButton>
-              </Link>
-              <Link href="/playground">
-                <StudioButton variant="outline" size="lg" className="gap-2" data-testid="hero-view-api">
-                  View API
-                </StudioButton>
-              </Link>
+              <Viewport />
             </motion.div>
-
-            {/* Trust Indicators */}
-            <motion.div 
-              className="flex items-center justify-center gap-8 pt-8 text-muted-foreground"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.8, duration: 0.6 }}
-            >
-              <div className="flex items-center gap-2">
-                <Star className="w-4 h-4 fill-accent text-accent" />
-                <span className="text-sm">GPU Accelerated</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Star className="w-4 h-4 fill-accent text-accent" />
-                <span className="text-sm">Webhook Ready</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Star className="w-4 h-4 fill-accent text-accent" />
-                <span className="text-sm">PWA Support</span>
-              </div>
-            </motion.div>
-          </motion.div>
+          </div>
         </div>
-      </AuroraBackground>
+      </section>
 
-      {/* Main Features */}
-      <section className="section">
+      {/* ---- Pipeline ---- */}
+      <section className="border-b border-border py-20">
         <div className="container">
           <SectionTitle
-            eyebrow="Powerful Features"
-            title="Everything you need to create"
-            description="Professional-grade tools designed for creators, developers, and businesses"
-            className="mb-16"
+            eyebrow="the pipeline"
+            title="Four stages, one call"
+            description="Every job runs the same path. You can hook into it at any stage or just wait for the webhook."
           />
 
-          <motion.div
-            className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            viewport={{ once: true, amount: 0.2 }}
-          >
-            {mainFeatures.map((feature) => {
-              const Icon = feature.icon;
+          <ol className="mt-14 grid gap-px overflow-hidden rounded-md border border-border bg-border md:grid-cols-2 lg:grid-cols-4">
+            {pipeline.map((step) => (
+              <li key={step.n} className="bg-card p-7">
+                <div className="font-mono text-2xl font-medium text-[var(--flux)]">{step.n}</div>
+                <h3 className="mt-4 text-lg font-bold tracking-tight">{step.title}</h3>
+                <p className="mt-2.5 text-sm leading-relaxed text-muted-foreground">{step.body}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      {/* ---- Tools ---- */}
+      <section className="py-20">
+        <div className="container">
+          <SectionTitle
+            eyebrow="generators"
+            title="Four tools, priced per run"
+            description="Credits are deducted when a job completes. Failed jobs are refunded automatically."
+          />
+
+          <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {tools.map((tool) => {
+              const Icon = tool.icon;
               return (
-                <motion.div key={feature.title} variants={cardVariants}>
-                  <SpotlightCard
-                    className={feature.primary ? "ring-1 ring-primary/20" : ""}
-                    innerClassName="p-8"
-                  >
-                    <div className="space-y-4 h-full flex flex-col">
-                      <div className="flex items-center gap-3">
-                        <div className={`p-2 rounded-lg ${feature.primary ? "bg-primary/20" : "bg-accent/20"}`}>
-                          <Icon className={`w-5 h-5 ${feature.primary ? "text-primary" : "text-accent"}`} />
-                        </div>
-                        <h3 className="font-heading font-semibold text-lg">{feature.title}</h3>
-                        {feature.primary && (
-                          <Badge variant="live" className="text-xs">Popular</Badge>
-                        )}
-                      </div>
-
-                      <p className="text-muted-foreground">{feature.description}</p>
-
-                      <p className="text-sm text-muted-foreground/80 leading-relaxed flex-1">
-                        {feature.details}
-                      </p>
-
-                      <Link href={feature.href}>
-                        <StudioButton
-                          variant={feature.primary ? "gradient" : "outline"}
-                          className="w-full mt-6"
-                          data-testid={feature.testId}
-                        >
-                          {feature.buttonText}
-                        </StudioButton>
-                      </Link>
+                <div key={tool.title}>
+                  <PanelCard className="flex h-full flex-col p-6" accent={tool.lead}>
+                    <div className="flex items-start justify-between">
+                      <Icon
+                        className={`h-5 w-5 ${tool.lead ? "text-[var(--flux)]" : "text-[var(--mesh)]"}`}
+                        strokeWidth={1.75}
+                      />
+                      <span className="mono-label">
+                        {tool.cost} cr
+                      </span>
                     </div>
-                  </SpotlightCard>
-                </motion.div>
+                    <h3 className="mt-5 text-base font-bold tracking-tight">{tool.title}</h3>
+                    <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
+                      {tool.body}
+                    </p>
+                    <Link href={tool.href}>
+                      <span className="mt-6 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--flux)] hover:underline">
+                        Run it <ArrowRight className="h-3 w-3" />
+                      </span>
+                    </Link>
+                  </PanelCard>
+                </div>
               );
             })}
-          </motion.div>
+          </div>
         </div>
       </section>
 
-      {/* AI Capabilities */}
-      <section className="section">
+      {/* ---- Close ---- */}
+      <section className="border-t border-border py-20">
         <div className="container">
-          <SectionTitle
-            eyebrow="AI Capabilities"
-            title="Advanced AI workflows"
-            description="State-of-the-art AI models powering your creative process"
-            className="mb-16"
-          />
-          
-          <motion.div 
-            className="grid md:grid-cols-3 gap-8"
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-          >
-            {capabilities.map((capability, index) => {
-              const Icon = capability.icon;
-              return (
-                <motion.div key={capability.title} variants={cardVariants}>
-                  <GlassCard className="text-center h-full hover:scale-105 transition-all duration-300">
-                    <div className="space-y-4">
-                      <div className={`inline-flex p-4 rounded-2xl bg-gradient-to-br from-primary/20 to-primary-2/20`}>
-                        <Icon className={`w-8 h-8 ${capability.color}`} />
-                      </div>
-                      <h3 className="font-heading font-semibold text-xl">{capability.title}</h3>
-                      <p className="text-muted-foreground leading-relaxed">
-                        {capability.description}
-                      </p>
-                      {index === 1 && <div className="workflow-arrow"></div>}
-                    </div>
-                  </GlassCard>
-                </motion.div>
-              );
-            })}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Workflow Steps */}
-      <section className="section">
-        <div className="container">
-          <SectionTitle
-            eyebrow="How it works"
-            title="Simple 3-step workflow"
-            description="From prompt to production-ready 3D content"
-            className="mb-16"
-          />
-          
-          <motion.div 
-            className="grid md:grid-cols-3 gap-8 items-center"
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-          >
-            <motion.div variants={cardVariants} className="text-center">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary text-white font-bold text-lg mb-4">
-                1
-              </div>
-              <h3 className="font-heading font-semibold text-lg mb-2">Prompt</h3>
-              <p className="text-muted-foreground">Describe what you want to create with natural language</p>
-            </motion.div>
-            
-            <motion.div variants={cardVariants} className="text-center relative">
-              <div className="absolute -left-8 top-6 hidden md:block">
-                <ArrowRight className="w-6 h-6 text-primary" />
-              </div>
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary-2 text-white font-bold text-lg mb-4">
-                2
-              </div>
-              <h3 className="font-heading font-semibold text-lg mb-2">Webhook</h3>
-              <p className="text-muted-foreground">AI processes your request and sends results via webhook</p>
-            </motion.div>
-            
-            <motion.div variants={cardVariants} className="text-center relative">
-              <div className="absolute -left-8 top-6 hidden md:block">
-                <ArrowRight className="w-6 h-6 text-primary" />
-              </div>
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-accent text-white font-bold text-lg mb-4">
-                3
-              </div>
-              <h3 className="font-heading font-semibold text-lg mb-2">Preview & Download</h3>
-              <p className="text-muted-foreground">Review, refine and download your 3D content</p>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="section">
-        <div className="container">
-          <motion.div 
-            className="glass rounded-3xl p-12 text-center space-y-8 bg-gradient-to-br from-primary/10 to-primary-2/10"
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-          >
-            <div className="space-y-4">
-              <h2 className="text-3xl md:text-4xl font-heading font-bold">
-                Ready to start creating?
-              </h2>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                Join thousands of creators using AI Studio to bring their 3D visions to life.
+          <div className="panel tick-frame flex flex-col items-start justify-between gap-8 p-10 md:flex-row md:items-center md:p-14">
+            <div>
+              <h2 className="text-3xl md:text-4xl">Start with 25 credits</h2>
+              <p className="mt-3 max-w-md text-muted-foreground">
+                Enough for five meshes or twenty-five concept frames. No card, no trial clock.
               </p>
             </div>
-            
             <Link href="/generate">
-              <StudioButton size="lg" className="gap-2" data-testid="cta-get-started">
-                <Zap className="w-5 h-5" />
-                Get Started Free
-                <ArrowRight className="w-4 h-4" />
+              <StudioButton size="lg" data-testid="cta-get-started">
+                Open the studio
+                <ArrowRight className="h-4 w-4" />
               </StudioButton>
             </Link>
-            
-            <p className="text-sm text-muted-foreground">
-              No credit card required • 20 free credits to start
-            </p>
-          </motion.div>
+          </div>
         </div>
       </section>
     </div>

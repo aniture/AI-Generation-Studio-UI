@@ -4,35 +4,25 @@ interface SectionTitleProps {
   eyebrow?: string;
   title: string;
   description?: string;
-  centered?: boolean;
   className?: string;
 }
 
-export function SectionTitle({ 
-  eyebrow, 
-  title, 
-  description, 
-  centered = true,
-  className 
-}: SectionTitleProps) {
+/*
+  Section headings are left-aligned and ruled, the way a spec sheet is: the
+  eyebrow is a monospace tag, and a hairline carries the eye across the page.
+*/
+export function SectionTitle({ eyebrow, title, description, className }: SectionTitleProps) {
   return (
-    <div className={cn(
-      "space-y-4",
-      centered && "text-center",
-      className
-    )}>
+    <div className={cn("max-w-2xl", className)}>
       {eyebrow && (
-        <p className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
-          {eyebrow}
-        </p>
+        <div className="flex items-center gap-3">
+          <span className="h-px w-6 bg-[var(--flux)]" />
+          <span className="mono-label">{eyebrow}</span>
+        </div>
       )}
-      <h2 className="gradient-text">
-        {title}
-      </h2>
+      <h2 className="mt-4 text-3xl md:text-[2.5rem]">{title}</h2>
       {description && (
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          {description}
-        </p>
+        <p className="mt-4 text-base leading-relaxed text-muted-foreground">{description}</p>
       )}
     </div>
   );

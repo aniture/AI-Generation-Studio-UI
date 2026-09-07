@@ -25,6 +25,12 @@ export default {
           DEFAULT: "var(--primary)",
           foreground: "var(--primary-foreground)",
         },
+        "primary-2": {
+          DEFAULT: "var(--primary-2)",
+          foreground: "var(--primary-2-foreground)",
+        },
+        success: "var(--success)",
+        warning: "var(--warning)",
         secondary: {
           DEFAULT: "var(--secondary)",
           foreground: "var(--secondary-foreground)",
@@ -52,7 +58,7 @@ export default {
           "5": "var(--chart-5)",
         },
         sidebar: {
-          DEFAULT: "var(--sidebar-background)",
+          DEFAULT: "var(--sidebar)",
           foreground: "var(--sidebar-foreground)",
           primary: "var(--sidebar-primary)",
           "primary-foreground": "var(--sidebar-primary-foreground)",
@@ -63,6 +69,7 @@ export default {
         },
       },
       fontFamily: {
+        heading: ["var(--font-heading)"],
         sans: ["var(--font-sans)"],
         serif: ["var(--font-serif)"],
         mono: ["var(--font-mono)"],

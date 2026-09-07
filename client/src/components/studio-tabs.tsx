@@ -163,9 +163,9 @@ export function StudioTabs({ userCredits, onJobCreated }: StudioTabsProps) {
   const isLoading = createJobMutation.isPending;
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-6">
+    <div className="w-full space-y-6">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="flex w-full justify-center items-stretch gap-6 sm:gap-8 lg:gap-12 p-8 mb-8 bg-black/20 backdrop-blur-sm border border-white/10 rounded-lg">
+        <TabsList className="grid h-auto w-full grid-cols-2 gap-px rounded-md border border-border bg-border p-0 sm:grid-cols-4">
           {Object.entries(toolInfo).map(([key, info]) => {
             const Icon = info.icon;
             const cost = toolCosts[key as keyof typeof toolCosts];
@@ -175,19 +175,15 @@ export function StudioTabs({ userCredits, onJobCreated }: StudioTabsProps) {
               <TabsTrigger
                 key={key}
                 value={key}
-                className="flex flex-col items-center justify-center gap-3 px-6 py-6 flex-1 min-h-[140px] min-w-[140px] max-w-[180px] text-center text-white/70 data-[state=active]:text-white data-[state=active]:bg-white/10 hover:bg-white/5 transition-all rounded-lg border-0 relative"
+                className="group relative flex flex-col items-start gap-3 rounded-none border-0 bg-card p-4 text-left text-muted-foreground transition-colors data-[state=active]:bg-secondary data-[state=active]:text-foreground data-[state=active]:shadow-none"
                 data-testid={`tab-${key}`}
               >
-                <div className="flex flex-col items-center justify-center w-full h-full space-y-3 py-2">
-                  <Icon className="h-8 w-8 flex-shrink-0" />
-                  <span className="text-xs font-medium leading-tight text-center whitespace-nowrap px-1">{info.title}</span>
-                  <Badge 
-                    variant={affordable ? "secondary" : "destructive"} 
-                    className="text-[9px] px-2 py-1 rounded-full flex-shrink-0"
-                  >
-                    {cost} credit{cost !== 1 ? 's' : ''}
-                  </Badge>
-                </div>
+                <span className="absolute inset-x-0 top-0 h-px bg-[var(--flux)] opacity-0 group-data-[state=active]:opacity-100" />
+                <Icon className="h-4 w-4 shrink-0 group-data-[state=active]:text-[var(--flux)]" strokeWidth={1.75} />
+                <span className="text-[13px] font-semibold leading-tight">{info.title}</span>
+                <span className={`font-mono text-[10px] uppercase tracking-[0.12em] ${affordable ? "text-muted-foreground" : "text-[var(--fail)]"}`}>
+                  {cost} cr
+                </span>
               </TabsTrigger>
             );
           })}
@@ -202,42 +198,42 @@ export function StudioTabs({ userCredits, onJobCreated }: StudioTabsProps) {
 
           return (
             <TabsContent key={key} value={key} className="mt-8">
-              <Card className="bg-black/20 backdrop-blur-sm border border-white/10">
+              <Card className="panel">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-3">
-                    <Icon className="h-6 w-6 text-blue-400" />
-                    <div>
-                      <div className="text-xl text-white">{info.title}</div>
-                      <div className="text-sm text-white/60 font-normal">{info.description}</div>
+                  <CardTitle className="flex items-start gap-3">
+                    <Icon className="mt-1 h-5 w-5 shrink-0 text-[var(--flux)]" strokeWidth={1.75} />
+                    <div className="min-w-0">
+                      <div className="text-lg font-bold tracking-tight">{info.title}</div>
+                      <div className="mt-1 text-sm font-normal text-muted-foreground">{info.description}</div>
                     </div>
-                    <Badge 
-                      variant={affordable ? "secondary" : "destructive"}
-                      className="ml-auto"
-                    >
-                      {cost} credits
-                    </Badge>
+                    <div className="ml-auto shrink-0 text-right">
+                      <div className="mono-label">cost</div>
+                      <div className={`font-mono text-sm ${affordable ? "text-[var(--mesh)]" : "text-[var(--fail)]"}`}>
+                        {cost} cr
+                      </div>
+                    </div>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {/* File upload for texturing and img2video */}
                   {needsFileUpload && (
                     <div className="space-y-2">
-                      <Label className="text-white">
-                        {tool === "texturing" ? "Upload 3D Model (.glb)" : "Upload Image"}
+                      <Label className="mono-label">
+                        {tool === "texturing" ? "model (.glb)" : "source image"}
                       </Label>
                       <div className="flex items-center gap-2">
                         <Input
                           type="file"
                           accept={tool === "texturing" ? ".glb,.gltf" : "image/*"}
                           onChange={(e) => handleFileUpload(tool, e)}
-                          className="bg-white/5 border-white/10 text-white file:bg-blue-600 file:text-white file:border-0"
+                          className="panel-inset font-mono text-xs file:mr-3 file:border-0 file:bg-[var(--flux)] file:px-3 file:py-1 file:font-mono file:text-[10px] file:uppercase file:tracking-[0.12em] file:text-[var(--primary-foreground)]"
                           data-testid={`input-file-${tool}`}
                         />
-                        <Upload className="h-4 w-4 text-white/60" />
+                        <Upload className="h-4 w-4 shrink-0 text-muted-foreground" />
                       </div>
                       {uploadedFiles[tool] && (
-                        <p className="text-sm text-green-400">
-                          ✓ {uploadedFiles[tool]!.name} uploaded
+                        <p className="font-mono text-xs text-[var(--mesh)]">
+                          {uploadedFiles[tool]!.name} attached
                         </p>
                       )}
                     </div>
@@ -245,8 +241,8 @@ export function StudioTabs({ userCredits, onJobCreated }: StudioTabsProps) {
 
                   {/* Prompt input */}
                   <div className="space-y-2">
-                    <Label htmlFor={`prompt-${tool}`} className="text-white">
-                      {tool === "texturing" ? "Texture Description" : "Prompt"}
+                    <Label htmlFor={`prompt-${tool}`} className="mono-label">
+                      {tool === "texturing" ? "material" : "prompt"}
                     </Label>
                     <Textarea
                       id={`prompt-${tool}`}
@@ -258,7 +254,7 @@ export function StudioTabs({ userCredits, onJobCreated }: StudioTabsProps) {
                       }
                       value={prompts[tool]}
                       onChange={(e) => setPrompts(prev => ({ ...prev, [tool]: e.target.value }))}
-                      className="bg-white/5 border-white/10 text-white placeholder:text-white/40 min-h-[100px]"
+                      className="panel-inset min-h-[120px] font-mono text-sm leading-relaxed placeholder:text-muted-foreground/60"
                       data-testid={`input-prompt-${tool}`}
                     />
                   </div>
@@ -267,24 +263,24 @@ export function StudioTabs({ userCredits, onJobCreated }: StudioTabsProps) {
                   {tool === "img2video" && (
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label className="text-white">Duration (seconds)</Label>
+                        <Label className="mono-label">duration · sec</Label>
                         <Input
                           type="number"
                           defaultValue={5}
                           min={1}
                           max={10}
-                          className="bg-white/5 border-white/10 text-white"
+                          className="panel-inset font-mono text-sm"
                           data-testid="input-duration"
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label className="text-white">Frame Rate (FPS)</Label>
+                        <Label className="mono-label">frame rate · fps</Label>
                         <Input
                           type="number"
                           defaultValue={24}
                           min={12}
                           max={60}
-                          className="bg-white/5 border-white/10 text-white"
+                          className="panel-inset font-mono text-sm"
                           data-testid="input-fps"
                         />
                       </div>
@@ -295,25 +291,25 @@ export function StudioTabs({ userCredits, onJobCreated }: StudioTabsProps) {
                   <Button
                     onClick={() => handleSubmit(tool)}
                     disabled={!affordable || isLoading || !prompts[tool].trim()}
-                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:opacity-50"
+                    className="w-full rounded-[var(--radius)] bg-[var(--flux)] font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--primary-foreground)] hover:brightness-110 disabled:opacity-40"
                     data-testid={`button-generate-${tool}`}
                   >
                     {isLoading ? (
                       <>
                         <Wand2 className="h-4 w-4 mr-2 animate-spin" />
-                        Generating...
+                        Running…
                       </>
                     ) : (
                       <>
                         <Wand2 className="h-4 w-4 mr-2" />
-                        Generate {info.title}
+                        Run · {cost} cr
                       </>
                     )}
                   </Button>
 
                   {!affordable && (
-                    <p className="text-sm text-red-400 text-center">
-                      You need {cost - userCredits} more credits to use this tool
+                    <p className="text-center font-mono text-xs text-[var(--fail)]">
+                      Need {cost - userCredits} more credits to run this.
                     </p>
                   )}
                 </CardContent>
