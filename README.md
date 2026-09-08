@@ -7,6 +7,17 @@ A comprehensive AI-powered content generation platform featuring multiple AI too
 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![Node.js](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)
 
+## 🔗 Live demo
+
+[![Live demo](https://img.shields.io/badge/Live%20demo-ai--generation--studio--ui.vercel.app-FF5C1A?style=for-the-badge&logo=vercel&logoColor=white)](https://ai-generation-studio-ui.vercel.app)
+
+**<https://ai-generation-studio-ui.vercel.app>**
+
+The deployed build runs entirely in the browser. Generation is simulated and jobs,
+credits and assets are kept in `localStorage`, so you can walk the whole flow —
+prompt, queue, job status, asset library, API reference — without any API keys or
+a running backend. Follow the setup below to run it against real providers.
+
 ## ✨ Features
 
 ### 🎨 **Text to Image Generation**
